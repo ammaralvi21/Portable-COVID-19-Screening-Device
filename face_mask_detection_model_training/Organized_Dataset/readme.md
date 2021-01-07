@@ -6,7 +6,7 @@ The dataset is made available under [Creative Commons BY-NC-SA 4.0](https://crea
 
 Additionally, some maskless face images were aqcuired from [ffhq-dataset](https://github.com/NVlabs/ffhq-dataset) images1024x1024 under the [Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) license by NVIDIA Corporation.
 
-Masked, maskless, and incorrectly worn masked images were obtained from Larxel's [Face Mask Detection Dataset](https://www.kaggle.com/andrewmvd/face-mask-detection) under the [Public Domain CC0 1.0] (https://creativecommons.org/publicdomain/zero/1.0/) license. The images were cropped and organized using .xml annotations file which contained the bounding box location of the faces with their classification.
+Masked, maskless, and incorrectly worn masked images were obtained from Larxel's [Face Mask Detection Dataset](https://www.kaggle.com/andrewmvd/face-mask-detection) under the [Public Domain CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) license. The images were cropped and organized using .xml annotations file which contained the bounding box location of the faces with their classification.
 
 Finally another masked and maskless dataset was obtained from [AIZOOTech](https://github.com/AIZOOTech/FaceMaskDetection). The images were cropped and organized using the .xml annotations file which contained the bounding box location of the faces along with their classification.
 
