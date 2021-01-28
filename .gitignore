@@ -1,0 +1,3 @@
+
+*.o
+STM32_IR_UI/User_Interface/Drivers/CMSIS/*
