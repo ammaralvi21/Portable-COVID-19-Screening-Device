@@ -5,4 +5,4 @@ sudo systemctl restart nvargus-daemon.service
 
 export TF_GPU_ALLOCATOR=CUDA_MALLOC
 
-python3 trt_mtcnn.py --onboard 1
+python3 main.py --onboard 1

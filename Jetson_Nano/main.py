@@ -11,7 +11,7 @@ import cv2
 from utils.camera import add_camera_args, Camera
 from utils.display import open_window, set_display, show_fps
 from utils.mtcnn import TrtMtcnn
-from face_mask_detect import FaceMask
+from facemask_model_api import FaceMask
 
 
 WINDOW_NAME = 'TrtMtcnnDemo'
