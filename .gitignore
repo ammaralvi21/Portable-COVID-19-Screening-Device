@@ -1,6 +1,4 @@
-
 *.o
-STM32_IR_UI/User_Interface/Drivers/CMSIS/*
 *.map
 *.lnp
 *.htm
@@ -11,3 +9,4 @@ STM32_IR_UI/User_Interface/Drivers/CMSIS/*
 *.htm
 *.d
 *.crf
+STM32_IR_UI/User_Interface/Drivers/CMSIS/*
