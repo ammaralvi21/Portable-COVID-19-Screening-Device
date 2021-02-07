@@ -6,3 +6,8 @@ STM32_IR_UI/User_Interface/Drivers/CMSIS/*
 *.htm
 *.hex
 *.lnp
+*.hex
+*.axf
+*.htm
+*.d
+*.crf
