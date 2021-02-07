@@ -16,6 +16,7 @@
 "user_interface\stm32f1xx_hal_flash.o"
 "user_interface\stm32f1xx_hal_flash_ex.o"
 "user_interface\stm32f1xx_hal_exti.o"
+"user_interface\stm32f1xx_hal_i2c.o"
 "user_interface\stm32f1xx_hal_tim.o"
 "user_interface\stm32f1xx_hal_tim_ex.o"
 "user_interface\stm32f1xx_hal_uart.o"
