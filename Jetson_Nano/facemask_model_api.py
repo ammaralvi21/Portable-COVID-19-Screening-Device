@@ -22,10 +22,9 @@
 
 import cv2
 import os
-import tensorflow as tf
 import numpy as np
-from tensorflow import keras
-
+import jetson.inference
+import jetson.utils
 
 
 
@@ -38,15 +37,90 @@ from tensorflow import keras
 
 #change_res(224, 224)
 
-#minimum_brightness = 1.6
+minimum_brightness = 1.6
 
+
+myArg = ['facemask_model_api.py', '--model=model/resnet50.onnx', '--input_blob=input_0', '--output_blob=output_0', '--labels=labels.txt']
+font = jetson.utils.cudaFont()
 
 class  FaceMask:
     def __init__(self,path):
-        gpus = tf.config.experimental.list_physical_devices('GPU')
+        # load the recognition network
+        print("loading inference recognition network")
+        self.net = jetson.inference.imageNet("googlenet", myArg)
+
+        self.font = cv2.FONT_HERSHEY_SIMPLEX    # font
+        self.org = (00, 00)                     # org 
+        self.fontScale = 1                    # fontScale 
+        self.color = (0, 0, 255)                # Red color in BGR 
+        self.thickness = 2
+        self.dim = (224, 224)
+        #self.cnt = 0
+
+
+    def preprocess(self,roi):
+        self.x1, self.y1, self.x2, self.y2 = (int(roi[0][0]) - 5), (int(roi[0][1]) - 5), (int(roi[0][2]) + 30), (int(roi[0][3])+ 25)    
+        self.crop_img = self.image[self.y1:self.y2, self.x1:self.x2]
+	    
+    def display_info(self):
+        cv2.putText(self.image, str(self.class_id) + "  " + str(self.confidence)+ "  " + str(self.class_desc), (self.x1, self.y1 - 20), self.font, self.fontScale, self.color, self.thickness, cv2.LINE_AA, False)
+        cv2.rectangle(self.image, (self.x1, self.y1), (self.x2, self.y2), self.color, 2)
+    
+    def detect(self,roi,image):
+        self.image = image
+        self.preprocess(roi)
+        if self.crop_img.size > 0:
+            self.out_of_range = 0
+            #img_resized = cv2.resize(self.crop_img, self.dim, interpolation=cv2.INTER_NEAREST)
+            #img_resized = tf.keras.preprocessing.image.img_to_array(img_resized)
+            #img_resized = np.expand_dims(img_resized, axis=0)
+
+            # classify the image
+            #cols, rows, x = self.crop_img.shape
+            #brightness = np.sum(self.crop_img) / (255 * cols * rows)
+            #ratio = brightness / minimum_brightness
+            #if ratio < 1:
+            #    self.image = cv2.convertScaleAbs(self.image, alpha = (1 / ratio), beta = 0)
+            #    self.preprocess(roi)
+            #self.cudaImg = cv2.cvtColor(self.crop_img, cv2.COLOR_BGR2RGB)
+            self.cudaImg = jetson.utils.cudaFromNumpy(cv2.cvtColor(self.crop_img, cv2.COLOR_BGR2RGB))
+            self.class_id, self.confidence = self.net.Classify(self.cudaImg)
+            self.class_desc = self.net.GetClassDesc(self.class_id)
+            #if self.cnt > 50:
+            #    self.cnt = 0
+            # overlay the result on the image	
+            #font.OverlayText(myCudaImg, myCudaImg.width, myCudaImg.height, "{:05.2f}% {:s}".format(self.confidence * 100, self.class_desc), 5, 5, font.White, font.Gray40)
+            #jetson.utils.saveImageRGBA("cudaimage/" + str(self.cnt) + "cudyImage.jpg", myCudaImg, myCudaImg.width , myCudaImg.height)
+            #self.cnt = self.cnt + 1
+            # find the object description
+            
+            #prob = self.model(img_resized,training=False)
+            #print(prob)
+            #self.is_detected = np.argmax(prob, axis=0)
+            #print(self.is_detected)
+            #self.mask_prob = prob[0][1]
+            #self.no_mask_prob = prob[0][0]
+            #print(self.class_id)
+            #print(self.confidence)
+            #print(self.class_desc)
+            if(self.class_id) and (self.confidence > 0.85):
+                self.color = (0, 255, 0)
+            else:
+                self.color = (0, 0, 255)
+
+            self.display_info()
+        else:
+            self.out_of_range = 1
+            print("out of range ")
+
+        return self.image, self.confidence, self.class_id
+
+        
+
+'''        gpus = tf.config.experimental.list_physical_devices('GPU')
         if gpus:
             try:
-                # Currently, memory growth needs to be the same across GPUs
+               # Currently, memory growth needs to be the same across GPUs
                 for gpu in gpus:
                     tf.config.experimental.set_memory_growth(gpu, True)
                 logical_gpus = tf.config.experimental.list_logical_devices('GPU')
@@ -54,7 +128,7 @@ class  FaceMask:
             except RuntimeError as e:
                 # Memory growth must be set before GPUs have been initialized
                 print(e)
-        '''gpus = tf.config.experimental.list_physical_devices('GPU')
+        gpus = tf.config.experimental.list_physical_devices('GPU')
         if gpus:
             # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
             try:
@@ -65,63 +139,12 @@ class  FaceMask:
                 print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
             except RuntimeError as e:
                 # Virtual devices must be set before GPUs have been initialized
-                print(e)'''
+                print(e)
         cnfig = tf.ConfigProto()
         config.gpu_options.allow_growth = True
         config.gpu_options.per_process_gpu_memory_fraction = 0.4
         session = tf.Session(config=config, ...)
-        print("\nloading model....\n")
-        self.model = keras.models.load_model(path,compile=False)
-        #self.model = keras.models.load_model(path,compile=False)
-        #with tf.Session(graph=tf.Graph()) as session:
-        #    serve = tf.saved_model.load(session, tags=['serve'], export_dir=path)
-        #    tags = extract_tags(serve.signature_def, session.graph)
-        #    model = tags['serving_default']
-
-        self.font = cv2.FONT_HERSHEY_SIMPLEX    # font
-        self.org = (00, 00)                     # org 
-        self.fontScale = 0.7                    # fontScale 
-        self.color = (0, 0, 255)                # Red color in BGR 
-        self.thickness = 2
-        self.dim = (224, 224)
-
-
-    def preprocess(self,roi):
-        self.x1, self.y1, self.x2, self.y2 = int(roi[0][0]), int(roi[0][1]), int(roi[0][2]), int(roi[0][3])    
-        self.crop_img = self.image[self.y1:self.y2, self.x1:self.x2]
-	    
-    def display_info(self):
-        cv2.putText(self.image, str(self.is_detected) + "  ", (self.x1, self.y1 - 20), self.font, self.fontScale, self.color, self.thickness, cv2.LINE_AA, False)
-        cv2.rectangle(self.image, (self.x1, self.y1), (self.x2, self.y2), self.color, 2)
-    
-    def detect(self,roi,image):
-        self.image = image
-        self.preprocess(roi)
-        if self.crop_img.size > 0:
-            self.out_of_range = 0
-            img_resized = cv2.resize(self.crop_img, self.dim, interpolation=cv2.INTER_NEAREST)
-            img_resized = tf.keras.preprocessing.image.img_to_array(img_resized)
-            img_resized = np.expand_dims(img_resized, axis=0)
-
-            img_resized = tf.keras.applications.resnet50.preprocess_input(img_resized)
-            
-            prob = self.model(tf.constant(img_resized,dtype=tf.float32))
-            #prob = self.model(img_resized,training=False)
-            
-            self.is_detected = np.argmax(prob, axis=1)
-            print(self.is_detected)
-            self.mask_prob = prob[0][1]
-            self.no_mask_prob = prob[0][0]
-            self.display_info()
-        else:
-            self.out_of_range = 1
-            print("out of range ")
-
-        return self.image
-
-        
-
-
+	self.model = keras.models.load_model(path,compile=False)'''
    
             
 '''
