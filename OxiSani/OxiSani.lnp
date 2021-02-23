@@ -1,0 +1,26 @@
+--cpu Cortex-M3
+"oxisani\startup_stm32f100xb.o"
+"oxisani\main.o"
+"oxisani\stm32f1xx_it.o"
+"oxisani\stm32f1xx_hal_msp.o"
+"oxisani\stm32f1xx_hal_gpio_ex.o"
+"oxisani\stm32f1xx_hal_adc.o"
+"oxisani\stm32f1xx_hal_adc_ex.o"
+"oxisani\stm32f1xx_hal.o"
+"oxisani\stm32f1xx_hal_rcc.o"
+"oxisani\stm32f1xx_hal_rcc_ex.o"
+"oxisani\stm32f1xx_hal_gpio.o"
+"oxisani\stm32f1xx_hal_dma.o"
+"oxisani\stm32f1xx_hal_cortex.o"
+"oxisani\stm32f1xx_hal_pwr.o"
+"oxisani\stm32f1xx_hal_flash.o"
+"oxisani\stm32f1xx_hal_flash_ex.o"
+"oxisani\stm32f1xx_hal_exti.o"
+"oxisani\stm32f1xx_hal_i2c.o"
+"oxisani\stm32f1xx_hal_tim.o"
+"oxisani\stm32f1xx_hal_tim_ex.o"
+"oxisani\system_stm32f1xx.o"
+--library_type=microlib --strict --scatter "OxiSani\OxiSani.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "OxiSani.map" -o OxiSani\OxiSani.axf
